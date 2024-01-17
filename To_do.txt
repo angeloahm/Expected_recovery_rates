@@ -1,0 +1,9 @@
+17/01/2024:
+
+1. We need a Speudo-code explaining exactly how this code works.
+2. We need another Speudo-code but this time with the new version:
+    2.1 b>0 is debt.
+    2.2 The grid for both bonds is allowed to have only one element, and that element to be zero.
+    2.3 Perform all the checks and then an only then start thinking about optimization.
+3. In order to check the results we will also want to write a psuedo code on what the MATLAB routine will do.
+4. We havent made much progress regarding the simulations.

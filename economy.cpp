@@ -14,41 +14,42 @@ const int MAX_THREADS = 32; // Define a constant variable at the start of the fi
 Economy::Economy(int b_grid_size_lowr, int b_grid_size_highr, double b_grid_min_lowr, double b_grid_min_highr, double b_grid_max_lowr, double b_grid_max_highr, int y_grid_size, double y_default, double beta, double gamma, double r, double rho, double sigma, double theta, double alpha_lowr, double alpha_highr, double tol, int max_iter, double m, double* ptr_y_grid, double* ptr_y_grid_default, double* ptr_b_grid_lowr, double* ptr_b_grid_highr, double* ptr_p_grid, double* ptr_v, double* ptr_v_r, double* ptr_v_d, double* ptr_q_lowr, double* ptr_q_highr, int* ptr_b_policy_lowr, int* ptr_b_policy_highr, double* ptr_d_policy){
   
     // Parameters:
+
     B_grid_size_lowr = b_grid_size_lowr;            // Number of points in the grid for the bond price.
     B_grid_size_highr = b_grid_size_highr;          // Number of points in the grid for the bond price.
     B_grid_min_lowr = b_grid_min_lowr;              // Minimum value of the bond price.
-    B_grid_min_highr = b_grid_min_highr;
+    B_grid_min_highr = b_grid_min_highr;            // Minimum value of the bond price.
     B_grid_max_lowr = b_grid_max_lowr;              // Maximum value of the bond price.
-    b_grid_max_highr = b_grid_max_highr;
-    Y_grid_size = y_grid_size;            // Number of points in the grid for the income.
-    Y_default = y_default;                // Maximum income under default.
-    Beta = beta;                          // Discount factor.
-    Gamma = gamma;                        // Risk aversion.
-    R = r;                                // Interest rate.
-    Rho = rho;                            // Persistence of the income.
-    Sigma = sigma;                        // Standard deviation of the income.
-    Theta = theta;                        // Probability of a re-entry.
-    Alpha_lowr = alpha_lowr;                // Recovery rate for the low recovery debt.
-    Alpha_highr = alpha_highr;              // Recovery rate for the high recovery debt.
-    Tol = tol;                            // Tolerance for the convergence.
-    Max_iter = max_iter;                  // Maximum number of iterations.
-    M = m;                                // Number of standard deviations for the income grid.
+    b_grid_max_highr = b_grid_max_highr;            // Maximum value of the bond price.
+    Y_grid_size = y_grid_size;                      // Number of points in the grid for the income.
+    Y_default = y_default;                          // Maximum income under default.
+    Beta = beta;                                    // Discount factor.
+    Gamma = gamma;                                  // Risk aversion.
+    R = r;                                          // Interest rate.
+    Rho = rho;                                      // Persistence of the income.
+    Sigma = sigma;                                  // Standard deviation of the income.
+    Theta = theta;                                  // Probability of a re-entry.
+    Alpha_lowr = alpha_lowr;                        // Recovery rate for the low recovery debt.
+    Alpha_highr = alpha_highr;                      // Recovery rate for the high recovery debt.
+    Tol = tol;                                      // Tolerance for the convergence.
+    Max_iter = max_iter;                            // Maximum number of iterations.
+    M = m;                                          // Number of standard deviations for the income grid.
         
     // Name the pointer to the arrays we will be working:
-    Y_grid = ptr_y_grid;                  // Income grid.
-    Y_grid_default = ptr_y_grid_default;  // Income grid for the default state.
+
+    Y_grid = ptr_y_grid;                            // Income grid.
+    Y_grid_default = ptr_y_grid_default;            // Income grid for the default state.
     B_grid_lowr = ptr_b_grid_lowr;                  // Bond price grid.
-    B_grid_highr = ptr_b_grid_highr;                  // Bond price grid.
-    P = ptr_p_grid;                       // Transition matrix.
-    V = ptr_v;                            // Value function.
-    V_r = ptr_v_r;                        // Value function under re-entry.
-    V_d = ptr_v_d;                        // Value function under default.
-    Q_lowr = ptr_q_lowr;                    // Price for the low recovery debt.
-    Q_highr = ptr_q_highr;                  // Price for the high recovery debt.
-    B_policy_lowr = ptr_b_policy_lowr;      // Bond policy for the low recovery debt.
-    B_policy_highr = ptr_b_policy_highr;    // Bond policy for the high recovery debt.
-    D_policy = ptr_d_policy;              // Default policy.
-    
+    B_grid_highr = ptr_b_grid_highr;                // Bond price grid.
+    P = ptr_p_grid;                                 // Transition matrix.
+    V = ptr_v;                                      // Value function.
+    V_r = ptr_v_r;                                  // Value function under re-entry.
+    V_d = ptr_v_d;                                  // Value function under default.
+    Q_lowr = ptr_q_lowr;                            // Price for the low recovery debt.
+    Q_highr = ptr_q_highr;                          // Price for the high recovery debt.
+    B_policy_lowr = ptr_b_policy_lowr;              // Bond policy for the low recovery debt.
+    B_policy_highr = ptr_b_policy_highr;            // Bond policy for the high recovery debt.
+    D_policy = ptr_d_policy;                        // Default policy. 
 }
 
 // Create grids and store it in the space previously allocated:
@@ -135,7 +136,7 @@ void Economy::update_v_and_default_policy(){
  
 // Update prices given a default policies;
 void Economy::update_price(){
-    #pragma omp parallel for collapse(3) schedule(dynamic) //num_threads(10)
+    #pragma omp parallel for collapse(3) schedule(dynamic) 
     for (int i=0; i<Y_grid_size; i++)
     {
         for (int j=0; j<B_grid_size_highr; j++)
@@ -258,7 +259,7 @@ int Economy::solve_model(){
         diff_vd = 0;
         diff_vr = 0;
 
-        #pragma omp parallel for schedule(dynamic) reduction(max:diff_q_lowr, diff_q_highr, diff_vd, diff_vr) //num_threads(10)
+        #pragma omp parallel for reduction(max:diff_q_lowr, diff_q_highr, diff_vd, diff_vr) 
         for (int id =0; id <Y_grid_size * B_grid_size_highr * B_grid_size_lowr; id++)
         {
             diff_q_lowr = fabs(Q0_lowr[id] - Q_lowr[id]);
@@ -297,6 +298,7 @@ int Economy::solve_model(){
             iter += 1;
         }
     }
+
     // If the model does not converge:
     mexPrintf("Convergence not achieved after: %d\n", iter);
     mexPrintf("Difference between value function at default: %f\n", diff_vd);
@@ -304,6 +306,7 @@ int Economy::solve_model(){
     mexPrintf("Difference between low prices: %f\n", diff_q_lowr);
     mexPrintf("Difference between high prices: %f\n", diff_q_highr);
     mexPrintf("Threads: %d\n", omp_get_max_threads());
+
     // Free memory:
     delete[] Vd0;
     delete[] Vr0;
