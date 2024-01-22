@@ -20,7 +20,7 @@ Economy::Economy(int b_grid_size_lowr, int b_grid_size_highr, double b_grid_min_
     B_grid_min_lowr = b_grid_min_lowr;              // Minimum value of the low recovery bond grid. 
     B_grid_min_highr = b_grid_min_highr;            // Minimum value of the high recovery bond grid.
     B_grid_max_lowr = b_grid_max_lowr;              // Maximum value of the low recovery bond grid.
-    b_grid_max_highr = b_grid_max_highr;            // Maximum value of the high recovery bond grid.
+    B_grid_max_highr = b_grid_max_highr;            // Maximum value of the high recovery bond grid.
     Y_grid_size = y_grid_size;                      // Number of points in the grid for the income.
     Y_default = y_default;                          // Maximum income under default.
     Beta = beta;                                    // Discount factor.
@@ -54,35 +54,36 @@ Economy::Economy(int b_grid_size_lowr, int b_grid_size_highr, double b_grid_min_
 
 // Create grids and store it in the space previously allocated:
 int Economy::initialize_economy(){
-    // Create the grid for the income:
-    create_bond_grids(B_grid_lowr, B_grid_size_lowr, B_grid_max_lowr, B_grid_min_lowr);
-    create_bond_grids(B_grid_highr, B_grid_size_highr, B_grid_max_lowr, B_grid_min_highr);
-
-    if (B_grid_lowr[B_grid_size_lowr - 1] > Tol || B_grid_lowr[B_grid_size_lowr - 1] < -Tol)
-    {
-            mexPrintf("Error: the bond grid is not correctly initialized..\n");
-            return EXIT_FAILURE;
-        if (B_grid_highr[B_grid_size_highr - 1] > Tol || B_grid_highr[B_grid_size_highr - 1] < -Tol)
-        {
-            mexPrintf("Error: the bond grid is not correctly initialized..\n");
-            return EXIT_FAILURE;
-        }
-    }    
     
+    // Create the bond grid:
+    if (B_grid_max_lowr < B_grid_min_lowr || B_grid_max_highr < B_grid_min_highr || B_grid_size_lowr < 1 || B_grid_size_highr < 1)
+    {   
+        mexPrintf(" !!! Error: the bond grid is not correctly initialized.\n");
+        return EXIT_FAILURE;
+    }
+    
+    create_bond_grids(B_grid_lowr, B_grid_size_lowr, B_grid_max_lowr, B_grid_min_lowr);
+    create_bond_grids(B_grid_highr, B_grid_size_highr, B_grid_max_highr, B_grid_min_highr);
+
     // Create the grid for the income and probability matrix:
     create_income_and_prob_grids(Y_grid, P, Y_grid_size, Sigma, Rho, M);
-    for (int i = 0; i < Y_grid_size; i++){
-        if (Y_grid[i]<=0){
+    for (int i = 0; i < Y_grid_size; i++)
+    {
+        if (Y_grid[i]<=0)
+        {
             mexPrintf("Error: the income grid is not correctly initialized.\n");
             return EXIT_FAILURE;
         }
     }
-    for (int i=0; i< Y_grid_size; i++){
+    for (int i=0; i< Y_grid_size; i++)
+    {
         double prob = 0;
-        for (int j=0; j<Y_grid_size; j++){
+        for (int j=0; j<Y_grid_size; j++)
+        {
             prob += P[i*Y_grid_size+j];
         }
-        if (prob > 1+Tol || prob < 1-Tol){
+        if (prob > 1+Tol || prob < 1-Tol)
+        {
             mexPrintf("Error: the probability matrix is not correctly initialized\n");
             return EXIT_FAILURE;
         }
@@ -92,7 +93,7 @@ int Economy::initialize_economy(){
     return EXIT_SUCCESS;
 }
 
-
+/*
 // Guess value function at default, value at reentry and price:
 void Economy::guess_vd_vr_q(){
     for (int i=0; i<Y_grid_size; i++)
@@ -306,6 +307,7 @@ int Economy::solve_model(){
     mexPrintf("Difference between low prices: %f\n", diff_q_lowr);
     mexPrintf("Difference between high prices: %f\n", diff_q_highr);
     mexPrintf("Threads: %d\n", omp_get_max_threads());
+    
 
     // Free memory:
     delete[] Vd0;
@@ -314,3 +316,5 @@ int Economy::solve_model(){
     delete[] Q0_highr;
     return EXIT_FAILURE;
 }
+
+*/
