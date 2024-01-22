@@ -184,42 +184,49 @@ void Economy::update_vd(){
 }
 
 
-/*
 // Update value of repayment and bond policy:
 void Economy::update_vr_and_bond_policy(){
-    #pragma omp parallel for collapse(3) schedule(dynamic) //num_threads(10)
+    #pragma omp parallel for collapse(3) schedule(dynamic) 
     for (int i=0; i<Y_grid_size; i++)
     {
         for (int j=0; j<B_grid_size_highr; j++)
         {
-            for (int z=0; z<B_grid_size_lowr; z++) // Each thread takes care of one element of the grid.
+            for (int z=0; z<B_grid_size_lowr; z++) 
             {
-                double aux_v = -1000000000;                          
+                double aux_v = -1000000000;
+                int aux_x_lowr = 0;
+                int aux_x_highr = 0;                          
                 for (int x_lowr = 0; x_lowr<B_grid_size_lowr; x_lowr++)
                 {
                     for (int x_highr = 0; x_highr<B_grid_size_highr; x_highr++)
                     {  
-                        double E_V_rx = 0;                                      // Expected continuation value of repayment following policy x_lowr and x_highr.
-                        double c = Y_grid[i] - Q_lowr[i*(B_grid_size_highr*B_grid_size_lowr)+x_highr*B_grid_size_lowr+x_lowr] * B_grid_lowr[x_lowr] - Q_highr[i*(B_grid_size_highr*B_grid_size_lowr)+x_highr*B_grid_size_lowr+x_lowr] * B_grid_highr[x_highr] + B_grid_highr[j] + B_grid_lowr[z];
-                        if (c > Tol){
-                            for (int i_prime = 0; i_prime < Y_grid_size; i_prime++){
+                        double E_V_rx = 0;       // Expected continuation value of repayment following x_lowr and x_highr.
+                        double c = Y_grid[i] + Q_lowr[i*(B_grid_size_highr*B_grid_size_lowr)+x_highr*B_grid_size_lowr+x_lowr] * B_grid_lowr[x_lowr] + Q_highr[i*(B_grid_size_highr*B_grid_size_lowr)+x_highr*B_grid_size_lowr+x_lowr] * B_grid_highr[x_highr] - B_grid_highr[j] - B_grid_lowr[z];
+                        if (c > Tol)
+                        {
+                            for (int i_prime = 0; i_prime < Y_grid_size; i_prime++)
+                            {
                                 E_V_rx += P[i*Y_grid_size+i_prime] * V[i_prime*(B_grid_size_highr*B_grid_size_lowr)+x_highr*B_grid_size_lowr+x_lowr];
                             }
                             double temp = utility(c, Gamma, Tol) + Beta * E_V_rx;
-                            if (temp >= aux_v){
+                            if (temp >= aux_v)
+                            {
                                 aux_v = temp;
-                                B_policy_lowr[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = x_lowr;
-                                B_policy_highr[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = x_highr;
+                                aux_x_lowr = x_lowr;
+                                aux_x_highr = x_highr;
                             }
                         }
                     }
                 }
                 V_r[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = aux_v;
+                B_policy_lowr[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = aux_x_lowr;
+                B_policy_highr[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = aux_x_highr;
             }
         }
     }
 }
 
+/*
 // Solve the model:
 int Economy::solve_model(){
 
