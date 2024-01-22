@@ -12,8 +12,8 @@ mex main.cpp economy.cpp initialization.cpp auxiliary.cpp
 
 %% Common parameters:
 
-params.b_grid_size_lowr = 100;          % Number of points in the grid for the low recovery bond.
-params.b_grid_size_highr = 150;         % Number of points in the grid for the high recovery bond.
+params.b_grid_size_lowr = 1;          % Number of points in the grid for the low recovery bond.
+params.b_grid_size_highr = 4;         % Number of points in the grid for the high recovery bond.
 params.b_grid_min_lowr = 0.0;          % Minimum value for the low recovery bond grid.
 params.b_grid_min_highr = 0.0;           % Minimum value for the high recovery bond grid.
 params.b_grid_max_lowr = 0.6;           % Maximum value of the low recovery bond grid.

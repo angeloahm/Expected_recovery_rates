@@ -93,7 +93,7 @@ int Economy::initialize_economy(){
     return EXIT_SUCCESS;
 }
 
-/*
+
 // Guess value function at default, value at reentry and price:
 void Economy::guess_vd_vr_q(){
     for (int i=0; i<Y_grid_size; i++)
@@ -102,15 +102,14 @@ void Economy::guess_vd_vr_q(){
         {
             for (int z=0; z<B_grid_size_lowr; z++)
             {
-                V_d[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = -20;
-                V_r[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = -20;
+                V_d[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = -20.00;
+                V_r[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = -20.00;
                 Q_lowr[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = 1/(1+R);
                 Q_highr[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = 1/(1+R);
             }
         }
     }
 }
-
 
 // Update value function and default policy:
 void Economy::update_v_and_default_policy(){
@@ -134,10 +133,10 @@ void Economy::update_v_and_default_policy(){
         }
     }
 }
- 
+
 // Update prices given a default policies;
 void Economy::update_price(){
-    #pragma omp parallel for collapse(3) schedule(dynamic) 
+    #pragma omp parallel for collapse(3) 
     for (int i=0; i<Y_grid_size; i++)
     {
         for (int j=0; j<B_grid_size_highr; j++)
@@ -158,11 +157,12 @@ void Economy::update_price(){
     }
 }
 
+
 // Update value at default:
 void Economy::update_vd(){
     double* Vd0 = new double[Y_grid_size * B_grid_size_highr * B_grid_size_lowr];      // Store initial value function at default:
     copy_vector(V_d, Vd0, Y_grid_size * B_grid_size_highr * B_grid_size_lowr);
-    #pragma omp parallel for collapse(3) schedule(dynamic) //num_threads(10)
+    #pragma omp parallel for collapse(3)  
     for (int i=0; i<Y_grid_size; i++)
     {
         for (int j=0; j<B_grid_size_highr ; j++)
@@ -172,17 +172,19 @@ void Economy::update_vd(){
                 double E_V = 0;
                 double E_Vd = 0;
                 for (int i_prime = 0; i_prime < Y_grid_size; i_prime++)
-                {   //! This needs to be cheked!
-                    E_V += P[i*Y_grid_size+i_prime] * V[i_prime*(B_grid_size_highr*B_grid_size_lowr)+(B_grid_size_highr-1)*B_grid_size_lowr+(B_grid_size_lowr-1)];           // Expected value given exclusion and zero debt.
-                    E_Vd += P[i*Y_grid_size+i_prime] * V_d[i_prime*(B_grid_size_highr*B_grid_size_lowr)+(B_grid_size_highr-1)*B_grid_size_lowr+(B_grid_size_lowr-1)];         // Expected value given exclusion and zero debt.      
+                {   
+                    E_V += P[i*Y_grid_size+i_prime] * V[i_prime*(B_grid_size_highr*B_grid_size_lowr)+(0)*B_grid_size_lowr+(0)];            // Expected value given exclusion and zero debt.
+                    E_Vd += P[i*Y_grid_size+i_prime] * V_d[i_prime*(B_grid_size_highr*B_grid_size_lowr)+(0)*B_grid_size_lowr+(0)];         // Expected value given exclusion and zero debt.      
                 }
-                V_d[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = utility(Y_grid_default[i] + Alpha_lowr * B_grid_lowr[z] + Alpha_highr * B_grid_highr[j], Gamma, Tol) + Beta * (Theta * E_V + (1-Theta) * E_Vd); // Payoff of recovery in current period.
+                V_d[i*(B_grid_size_highr*B_grid_size_lowr)+j*B_grid_size_lowr+z] = utility(Y_grid_default[i] - Alpha_lowr * B_grid_lowr[z] - Alpha_highr * B_grid_highr[j], Gamma, Tol) + Beta * (Theta * E_V + (1-Theta) * E_Vd); // Payoff of recovery in current period.
             }
         }
     }
     delete[] Vd0;
 }
 
+
+/*
 // Update value of repayment and bond policy:
 void Economy::update_vr_and_bond_policy(){
     #pragma omp parallel for collapse(3) schedule(dynamic) //num_threads(10)
