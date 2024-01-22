@@ -15,12 +15,12 @@ Economy::Economy(int b_grid_size_lowr, int b_grid_size_highr, double b_grid_min_
   
     // Parameters:
 
-    B_grid_size_lowr = b_grid_size_lowr;            // Number of points in the grid for the bond price.
-    B_grid_size_highr = b_grid_size_highr;          // Number of points in the grid for the bond price.
-    B_grid_min_lowr = b_grid_min_lowr;              // Minimum value of the bond price.
-    B_grid_min_highr = b_grid_min_highr;            // Minimum value of the bond price.
-    B_grid_max_lowr = b_grid_max_lowr;              // Maximum value of the bond price.
-    b_grid_max_highr = b_grid_max_highr;            // Maximum value of the bond price.
+    B_grid_size_lowr = b_grid_size_lowr;            // Number of points in the grid for the low recovery bond.
+    B_grid_size_highr = b_grid_size_highr;          // Number of points in the grid for the high recovery bond.
+    B_grid_min_lowr = b_grid_min_lowr;              // Minimum value of the low recovery bond grid. 
+    B_grid_min_highr = b_grid_min_highr;            // Minimum value of the high recovery bond grid.
+    B_grid_max_lowr = b_grid_max_lowr;              // Maximum value of the low recovery bond grid.
+    b_grid_max_highr = b_grid_max_highr;            // Maximum value of the high recovery bond grid.
     Y_grid_size = y_grid_size;                      // Number of points in the grid for the income.
     Y_default = y_default;                          // Maximum income under default.
     Beta = beta;                                    // Discount factor.
