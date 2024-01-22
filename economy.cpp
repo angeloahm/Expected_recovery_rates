@@ -300,6 +300,7 @@ int Economy::solve_model(){
                 mexPrintf("Difference between value function at reentry: %f\n", diff_vr);
                 mexPrintf("Difference between low prices: %f\n", diff_q_lowr);
                 mexPrintf("Difference between high prices: %f\n", diff_q_highr);
+                mexPrintf("Threads: %d\n", omp_get_max_threads());
             }
             // Update value functions and prices:
             copy_vector(V_d, Vd0, Y_grid_size * B_grid_size_highr * B_grid_size_lowr);

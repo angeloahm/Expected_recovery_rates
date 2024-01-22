@@ -29,34 +29,22 @@ Solution.V_r = permute(reshape(calibrated_model_solution.V_r, params.b_grid_size
 Solution.V_d = permute(reshape(calibrated_model_solution.V_d, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
 Solution.D_policy = permute(reshape(calibrated_model_solution.D_policy, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
 
-% When reshaping policy for debt, not that MATLAB starts indexing at 1.
+% When reshaping policy for debt,
 Solution.B_policy_lowr = permute(reshape(calibrated_model_solution.B_policy_lowr, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]) + 1;
 Solution.B_policy_highr = permute(reshape(calibrated_model_solution.B_policy_highr, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]) + 1;
 
+
+%% Take aways policies in default:
+
+
 %% Perform checks to see if bounds bind or not:
 
-check_low_recovery = max(max(max(Solution.B_policy_lowr)));
-check_high_recovery = max(max(max(Solution.B_policy_highr)));
-disp(['Low recovery check: ' num2str(Solution.B_grid_highr(check_low_recovery))]);
-disp(['High recovery check: ' num2str(Solution.B_grid_highr(check_high_recovery))]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+lowest_high_check = min(calibrated_model_solution.B_policy_highr(calibrated_model_solution.D_policy==0));
+lowest_low_check = min(calibrated_model_solution.B_policy_lowr(calibrated_model_solution.D_policy==0));
+disp(['High recovery, Highest debt: ' num2str(calibrated_model_solution.B_grid_highr(lowest_high_check))]);
+disp(['High recovery, Highest debt index: ' num2str(lowest_high_check)]);
+disp(['Low recovery, Highest debt: ' num2str(calibrated_model_solution.B_grid_lowr(lowest_low_check))]);
+disp(['Low recovery, Highest debt index:  ' num2str(lowest_low_check)]);
 
 %% Simulate moments:
 
