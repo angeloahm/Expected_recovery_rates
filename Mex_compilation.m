@@ -13,13 +13,13 @@ mex CXXFLAGS="$CXXFLAGS -fopenmp -O3" LDFLAGS="$LDFLAGS -fopenmp" main.cpp econo
 
 %% Common parameters:
 
-params.b_grid_size_lowr = 99;          % Number of points in the grid for the low recovery bond. 
+params.b_grid_size_lowr = 99;           % Number of points in the grid for the low recovery bond. 
 params.b_grid_size_highr = 101;         % Number of points in the grid for the high recovery bond. 
 params.b_grid_min_lowr = 0.0;           % Minimum value for the low recovery bond grid.
 params.b_grid_min_highr = 0.0;          % Minimum value for the high recovery bond grid.
-params.b_grid_max_lowr = 1.2;           % Maximum value of the low recovery bond grid.
-params.b_grid_max_highr = 1.2;          % Maximum value of the high recovery bond grid.
-params.y_grid_size = 12;                 % Number of points in the grid for the income. (Always use Odd)
+params.b_grid_max_lowr = 0.8;           % Maximum value of the low recovery bond grid.
+params.b_grid_max_highr = 1.1;          % Maximum value of the high recovery bond grid.
+params.y_grid_size = 12;                % Number of points in the grid for the income. (Always use Odd)
 params.y_default = 0.969;               % Maximum income under default.
 params.beta = 0.953;                    % Discount factor.
 params.gamma = 2;                       % Risk aversion.
