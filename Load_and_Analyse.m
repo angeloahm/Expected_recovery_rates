@@ -44,8 +44,7 @@ check_high_recovery = max(max(max(Solution.B_policy_highr)));
 disp(['Low recovery check: ' num2str(Solution.B_grid_lowr(check_low_recovery))]);
 disp(['High recovery check: ' num2str(Solution.B_grid_highr(check_high_recovery))]);
 
-
-%% Plot value functions:
+%% Parameters for plots:
 
 y_index = 10;
 
@@ -56,6 +55,9 @@ bh_highlevel = round(params.b_grid_size_highr/2);
 bl_lowlevel = round(params.b_grid_size_lowr/8);
 bl_midlevel = round(params.b_grid_size_lowr/4);
 bl_highlevel = round(params.b_grid_size_lowr/2);
+
+
+%% Plot value functions:
 
 
 %%% Plot value functions for LOW_RECOVERY debt given high recovery debt:
@@ -212,6 +214,55 @@ set(gca, 'FontSize', fontSize);
 % Create folder if it doesn't exist
 saveas(gcf, fullfile('Figures', 'prices_highrecovery_plot.png.png'));
 
+%% Plot policy functions:
+
+%%% Plot policies for LOW_RECOVERY debt given high recovery debt:
+
+% Set font size
+fontSize = 14;
+% Set figure size
+figureSize = [10, 8];
+% Set line width
+lineWidth = 2;
+% Set legend font size
+legendFontSize = 12;
+% Create figure
+figure('Units', 'inches', 'Position', [0, 0, figureSize], 'Color', 'w');
+% Create legend entry with LaTeX formatting
+legend_entry_low = sprintf('b_h = %.2f', Solution.B_grid_highr(bh_lowlevel));
+legend_entry_mid = sprintf('b_h = %.2f', Solution.B_grid_highr(bh_midlevel));
+legend_entry_high = sprintf('b_h = %.2f', Solution.B_grid_highr(bh_highlevel));
+
+% Small high-recovery debt level:
+nonNaN_indices = ~isnan(Solution.B_policy_lowr(bh_lowlevel,:, y_index));
+policy = Solution.B_policy_lowr(bh_lowlevel,:, y_index);
+policy = policy(nonNaN_indices);
+plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '-');
+hold on;
+% Medium high-recovery debt level:
+nonNaN_indices = ~isnan(Solution.B_policy_lowr(bh_midlevel,:, y_index));
+policy = Solution.B_policy_lowr(bh_lowlevel,:, y_index);
+policy = policy(nonNaN_indices);
+plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '--');
+hold on;
+% Big high-recovery debt level:
+nonNaN_indices = ~isnan(Solution.B_policy_lowr(bh_highlevel,:, y_index));
+policy = Solution.B_policy_lowr(bh_lowlevel,:, y_index);
+policy = policy(nonNaN_indices);
+plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '-');
+hold off;
+% Add title and labels with LaTeX formatting
+title('Low-recovery bond policy given $b_h$', 'Interpreter', 'latex', 'FontSize', fontSize);
+xlabel('$b_l$', 'Interpreter', 'latex', 'FontSize', fontSize);
+ylabel('$b_{l}^{\prime}(\cdot, b_h, y)$', 'Interpreter', 'latex', 'FontSize', fontSize);
+% Display the legend with increased font size
+legend(legend_entry_low, legend_entry_mid, legend_entry_high, 'FontSize', legendFontSize);
+% Display the grid
+grid on;
+% Increase font size of ticks
+set(gca, 'FontSize', fontSize);
+% Create folder if it doesn't exist
+saveas(gcf, fullfile('Figures', 'policies_lowrecovery_plot.png'));
 
 
 
