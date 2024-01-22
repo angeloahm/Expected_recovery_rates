@@ -1,3 +1,8 @@
+%% Reset:
+
+clc 
+clear all
+
 %% Load results from previous computations:
 
 load('Solution.mat')
@@ -37,25 +42,98 @@ Solution.B_policy_highr = permute(reshape(calibrated_model_solution.B_policy_hig
 
 check_low_recovery = max(max(max(Solution.B_policy_lowr)));
 check_high_recovery = max(max(max(Solution.B_policy_highr)));
-disp(['Low recovery check: ' num2str(Solution.B_grid_highr(check_low_recovery))]);
+disp(['Low recovery check: ' num2str(Solution.B_grid_lowr(check_low_recovery))]);
 disp(['High recovery check: ' num2str(Solution.B_grid_highr(check_high_recovery))]);
 
 
+%% Plot value functions:
+
+y_index = 6;
+
+bh_lowlevel = round(params.b_grid_size_highr/4);
+bh_midlevel = round(params.b_grid_size_highr/2);
+bh_highlevel = round(params.b_grid_size_highr * 0.75);
+
+bl_lowlevel = round(params.b_grid_size_lowr/4);
+bl_midlevel = round(params.b_grid_size_lowr/2);
+bl_highlevel = round(params.b_grid_size_lowr * 0.75);
 
 
+%% Plot value functions for LOW_RECOVERY debt given high recovery debt:
 
+% Set font size
+fontSize = 14;
+% Set figure size
+figureSize = [10, 8];
+% Set line width
+lineWidth = 2;
+% Set legend font size
+legendFontSize = 12;
+% Create figure
+figure('Units', 'inches', 'Position', [0, 0, figureSize], 'Color', 'w');
+% Create legend entry with LaTeX formatting
+legend_entry_low = sprintf('b_h = %.2f', Solution.B_grid_highr(bh_lowlevel));
+legend_entry_mid = sprintf('b_h = %.2f', Solution.B_grid_highr(bh_midlevel));
+legend_entry_high = sprintf('b_h = %.2f', Solution.B_grid_highr(bh_highlevel));
+% Small high-recovery debt level:
+plot(Solution.B_grid_lowr, Solution.V(bh_lowlevel,:, y_index), 'LineWidth', lineWidth, 'LineStyle', '-');
+hold on;
+% Medium high-recovery debt level:
+plot(Solution.B_grid_lowr, Solution.V(bh_midlevel,:, y_index), 'LineWidth', lineWidth, 'LineStyle', '--');
+hold on;
+% Big high-recovery debt level:
+plot(Solution.B_grid_lowr, Solution.V(bh_highlevel,:, y_index), 'LineWidth', lineWidth, 'LineStyle', '-.');
+hold off;
+% Add title and labels with LaTeX formatting
+title('Value functions given $b_h$', 'Interpreter', 'latex', 'FontSize', fontSize);
+xlabel('$b_l$', 'Interpreter', 'latex', 'FontSize', fontSize);
+ylabel('$V(\cdot, b_h, y)$', 'Interpreter', 'latex', 'FontSize', fontSize);
+% Display the legend with increased font size
+legend(legend_entry_low, legend_entry_mid, legend_entry_high, 'FontSize', legendFontSize);
+% Display the grid
+grid on;
+% Increase font size of ticks
+set(gca, 'FontSize', fontSize);
+% Create folder if it doesn't exist
+saveas(gcf, fullfile('Figures', 'value_functions_lowrecovery_plot.png'));
 
+%% Plot value functions for HIGH_RECOVERY debt given low recovery debt:
 
-
-
-
-
-
-
-
-
-
-
+% Set font size
+fontSize = 14;
+% Set figure size
+figureSize = [10, 8];
+% Set line width
+lineWidth = 2;
+% Set legend font size
+legendFontSize = 12;
+% Create figure
+figure('Units', 'inches', 'Position', [0, 0, figureSize], 'Color', 'w');
+% Create legend entry with LaTeX formatting
+legend_entry_low = sprintf('b_l = %.2f', Solution.B_grid_lowr(bl_lowlevel));
+legend_entry_mid = sprintf('b_l = %.2f', Solution.B_grid_lowr(bl_midlevel));
+legend_entry_high = sprintf('b_l = %.2f', Solution.B_grid_lowr(bl_highlevel));
+% Small high-recovery debt level:
+plot(Solution.B_grid_highr, Solution.V(:, bl_lowlevel, y_index), 'LineWidth', lineWidth, 'LineStyle', '-');
+hold on;
+% Medium high-recovery debt level:
+plot(Solution.B_grid_highr, Solution.V(:, bl_midlevel, y_index), 'LineWidth', lineWidth, 'LineStyle', '--');
+hold on;
+% Big high-recovery debt level:
+plot(Solution.B_grid_highr, Solution.V(:, bl_highlevel, y_index), 'LineWidth', lineWidth, 'LineStyle', '-.');
+hold off;
+% Add title and labels with LaTeX formatting
+title('Value functions given $b_l$', 'Interpreter', 'latex', 'FontSize', fontSize);
+xlabel('$b_h$', 'Interpreter', 'latex', 'FontSize', fontSize);
+ylabel('$V(b_l, \cdot, y)$', 'Interpreter', 'latex', 'FontSize', fontSize);
+% Display the legend with increased font size
+legend(legend_entry_low, legend_entry_mid, legend_entry_high, 'FontSize', legendFontSize);
+% Display the grid
+grid on;
+% Increase font size of ticks
+set(gca, 'FontSize', fontSize);
+% Create folder if it doesn't exist
+saveas(gcf, fullfile('Figures', 'value_functions_highrecovery_plot.png'));
 
 
 %% Simulate moments:
