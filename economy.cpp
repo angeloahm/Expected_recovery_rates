@@ -202,7 +202,7 @@ void Economy::update_vr_and_bond_policy(){
                     {  
                         double E_V_rx = 0;       // Expected continuation value of repayment following x_lowr and x_highr.
                         double c = Y_grid[i] + Q_lowr[i*(B_grid_size_highr*B_grid_size_lowr)+x_highr*B_grid_size_lowr+x_lowr] * B_grid_lowr[x_lowr] + Q_highr[i*(B_grid_size_highr*B_grid_size_lowr)+x_highr*B_grid_size_lowr+x_lowr] * B_grid_highr[x_highr] - B_grid_highr[j] - B_grid_lowr[z];
-                        double adj_cost = pow((B_grid_highr[x_highr]/(B_grid_highr[x_highr]+B_grid_lowr[x_lowr]))-(B_grid_highr[j]/(B_grid_highr[j]+B_grid_lowr[z])),2);
+                        double adj_cost = pow((B_grid_highr[x_highr]-B_grid_highr[j]),2) + pow((B_grid_lowr[x_lowr]-B_grid_lowr[z]),2);
                         c = c - adj_cost;
                         if (c > Tol)
                         {
