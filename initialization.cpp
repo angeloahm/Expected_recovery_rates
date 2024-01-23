@@ -7,8 +7,13 @@
 // Create bond grids:
 void create_bond_grids(double* prt_bond_grid, int Nb, double Bmax, double Bmin){
     double bstep = (Bmax - Bmin)/(Nb - 1);
-    for(int i = 0; i < Nb; i++){
-        prt_bond_grid[i] = Bmin + i*bstep;
+    if (Nb>1){
+        for(int i = 0; i < Nb; i++)
+        {
+            prt_bond_grid[i] = Bmin + i*bstep;
+        }
+    } else {
+        prt_bond_grid[0] = 0;
     }
 }
 
