@@ -249,7 +249,7 @@ hold on;
 nonNaN_indices = ~isnan(Solution.B_policy_lowr(bh_highlevel,:, y_index));
 policy = Solution.B_policy_lowr(bh_lowlevel,:, y_index);
 policy = policy(nonNaN_indices);
-plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '-');
+plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '-.');
 hold off;
 % Add title and labels with LaTeX formatting
 title('Low-recovery bond policy given $b_h$', 'Interpreter', 'latex', 'FontSize', fontSize);
