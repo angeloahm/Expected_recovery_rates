@@ -46,7 +46,7 @@ disp(['High recovery check: ' num2str(Solution.B_grid_highr(check_high_recovery)
 
 %% Parameters for plots:
 
-y_index = 10;
+y_index = round(params.y_grid_size * 0.8);
 
 bh_lowlevel = round(params.b_grid_size_highr/8);
 bh_midlevel = round(params.b_grid_size_highr/4);
