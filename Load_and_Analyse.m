@@ -242,13 +242,13 @@ plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWi
 hold on;
 % Medium high-recovery debt level:
 nonNaN_indices = ~isnan(Solution.B_policy_lowr(bh_midlevel,:, y_index));
-policy = Solution.B_policy_lowr(bh_lowlevel,:, y_index);
+policy = Solution.B_policy_lowr(bh_midlevel,:, y_index);
 policy = policy(nonNaN_indices);
 plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '--');
 hold on;
 % Big high-recovery debt level:
 nonNaN_indices = ~isnan(Solution.B_policy_lowr(bh_highlevel,:, y_index));
-policy = Solution.B_policy_lowr(bh_lowlevel,:, y_index);
+policy = Solution.B_policy_lowr(bh_highlevel,:, y_index);
 policy = policy(nonNaN_indices);
 plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '-.');
 hold off;
