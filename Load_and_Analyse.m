@@ -278,9 +278,9 @@ legendFontSize = 12;
 % Create figure
 figure('Units', 'inches', 'Position', [0, 0, figureSize], 'Color', 'w');
 % Create legend entry with LaTeX formatting
-legend_entry_low = sprintf('b_h = %.2f', Solution.B_grid_lowr(bl_lowlevel));
-legend_entry_mid = sprintf('b_h = %.2f', Solution.B_grid_lowr(bl_midlevel));
-legend_entry_high = sprintf('b_h = %.2f', Solution.B_grid_lowr(bl_highlevel));
+legend_entry_low = sprintf('b_l = %.2f', Solution.B_grid_lowr(bl_lowlevel));
+legend_entry_mid = sprintf('b_l = %.2f', Solution.B_grid_lowr(bl_midlevel));
+legend_entry_high = sprintf('b_l = %.2f', Solution.B_grid_lowr(bl_highlevel));
 % % Small high-recovery debt level:
 y_axis = Solution.Bond_policy_highr(:,bl_lowlevel, y_index);
 plot(Solution.B_grid_highr(y_axis>-1), y_axis(y_axis>-1), 'LineWidth', lineWidth, 'LineStyle', '-');
