@@ -11,7 +11,7 @@
 
 const int MAX_THREADS = 18; // Define a constant variable at the start of the file
 
-Economy::Economy(int b_grid_size_lowr, int b_grid_size_highr, double b_grid_min_lowr, double b_grid_min_highr, double b_grid_max_lowr, double b_grid_max_highr, int y_grid_size, double y_default, double beta, double gamma, double r, double rho, double sigma, double theta, double alpha_lowr, double alpha_highr, double tol, int max_iter, double m, double* ptr_y_grid, double* ptr_y_grid_default, double* ptr_b_grid_lowr, double* ptr_b_grid_highr, double* ptr_p_grid, double* ptr_v, double* ptr_v_r, double* ptr_v_d, double* ptr_q_lowr, double* ptr_q_highr, int* ptr_b_policy_lowr, int* ptr_b_policy_highr, double* ptr_d_policy){
+Economy::Economy(int b_grid_size_lowr, int b_grid_size_highr, double b_grid_min_lowr, double b_grid_min_highr, double b_grid_max_lowr, double b_grid_max_highr, int y_grid_size, double y_default, double beta, double gamma, double r, double rho, double sigma, double theta, double chi, double alpha_lowr, double alpha_highr, double tol, int max_iter, double m, double* ptr_y_grid, double* ptr_y_grid_default, double* ptr_b_grid_lowr, double* ptr_b_grid_highr, double* ptr_p_grid, double* ptr_v, double* ptr_v_r, double* ptr_v_d, double* ptr_q_lowr, double* ptr_q_highr, int* ptr_b_policy_lowr, int* ptr_b_policy_highr, double* ptr_d_policy){
   
     // Parameters:
 
@@ -29,6 +29,7 @@ Economy::Economy(int b_grid_size_lowr, int b_grid_size_highr, double b_grid_min_
     Rho = rho;                                      // Persistence of the income.
     Sigma = sigma;                                  // Standard deviation of the income.
     Theta = theta;                                  // Probability of a re-entry.
+    Chi = chi;                                      // Adjustment cost.
     Alpha_lowr = alpha_lowr;                        // Recovery rate for the low recovery debt.
     Alpha_highr = alpha_highr;                      // Recovery rate for the high recovery debt.
     Tol = tol;                                      // Tolerance for the convergence.
@@ -202,8 +203,8 @@ void Economy::update_vr_and_bond_policy(){
                     {  
                         double E_V_rx = 0;       // Expected continuation value of repayment following x_lowr and x_highr.
                         double c = Y_grid[i] + Q_lowr[i*(B_grid_size_highr*B_grid_size_lowr)+x_highr*B_grid_size_lowr+x_lowr] * B_grid_lowr[x_lowr] + Q_highr[i*(B_grid_size_highr*B_grid_size_lowr)+x_highr*B_grid_size_lowr+x_lowr] * B_grid_highr[x_highr] - B_grid_highr[j] - B_grid_lowr[z];
-                        // ! double adj_cost = 0.5 * (pow((B_grid_highr[x_highr]-B_grid_highr[j]),2) + pow((B_grid_lowr[x_lowr]-B_grid_lowr[z]),2));
-                        // ! c = c - adj_cost;
+                        double adj_cost = Chi * (pow((B_grid_highr[x_highr]-B_grid_highr[j]),2) + pow((B_grid_lowr[x_lowr]-B_grid_lowr[z]),2));
+                        c = c - adj_cost;
                         if (c > Tol)
                         {
                             for (int i_prime = 0; i_prime < Y_grid_size; i_prime++)

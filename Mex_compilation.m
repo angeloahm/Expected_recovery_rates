@@ -28,6 +28,7 @@ params.r = 0.017;                       % Interest rate.
 params.rho = 0.945;                     % Persistence of the income.
 params.sigma = 0.025;                   % Standard deviation of the income.
 params.theta = 0.282;                   % Probability of a re-entry.
+params.chi = 0;
 params.max_iter = 1000;                 % Maximum number of iterations.
 params.tol = 1e-6;                      % Tolerance for the convergence.
 params.m = 3;                           % Number of standard deviations for the income grid.

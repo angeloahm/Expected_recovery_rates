@@ -39,6 +39,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
     const double rho = static_cast<double>(mxGetScalar(mxGetField(paramsStruct, 0, "rho")));
     const double sigma = static_cast<double>(mxGetScalar(mxGetField(paramsStruct, 0, "sigma")));
     const double theta = static_cast<double>(mxGetScalar(mxGetField(paramsStruct, 0, "theta")));
+    const double chi = static_cast<double>(mxGetScalar(mxGetField(paramsStruct, 0, "chi")));
     const double alpha_lowr = static_cast<double>(mxGetScalar(mxGetField(paramsStruct, 0, "alpha_lowr")));
     const double alpha_highr = static_cast<double>(mxGetScalar(mxGetField(paramsStruct, 0, "alpha_highr")));
     const double tol = static_cast<double>(mxGetScalar(mxGetField(paramsStruct, 0, "tol")));
@@ -79,7 +80,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]){
     double* d_policy = new double[y_grid_size*b_grid_size_lowr * b_grid_size_highr];
   
     // Create an instance of the Economy class:
-    Economy economy(b_grid_size_lowr, b_grid_size_highr, b_grid_min_lowr, b_grid_min_highr, b_grid_max_lowr, b_grid_max_highr, y_grid_size, y_default, beta, gamma, r, rho, sigma, theta, alpha_lowr, alpha_highr, tol, max_iter, m, y_grid, y_grid_default, b_grid_lowr, b_grid_highr, p, v, v_r, v_d, q_lowr, q_highr, b_policy_lowr, b_policy_highr, d_policy);
+    Economy economy(b_grid_size_lowr, b_grid_size_highr, b_grid_min_lowr, b_grid_min_highr, b_grid_max_lowr, b_grid_max_highr, y_grid_size, y_default, beta, gamma, r, rho, sigma, theta, chi, alpha_lowr, alpha_highr, tol, max_iter, m, y_grid, y_grid_default, b_grid_lowr, b_grid_highr, p, v, v_r, v_d, q_lowr, q_highr, b_policy_lowr, b_policy_highr, d_policy);
     
     mexPrintf("Initialization done.\n");
     // Solve the model:
