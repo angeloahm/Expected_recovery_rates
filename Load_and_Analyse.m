@@ -28,10 +28,10 @@ Solution.D_policy = permute(reshape(calibrated_model_solution.D_policy, params.b
 
 %% Perform checks to see if bounds bind or not:
 
-check_low_recovery = max(max(max(Solution.B_policy_lowr)));
-check_high_recovery = max(max(max(Solution.B_policy_highr)));
-disp(['Low recovery check: ' num2str(Solution.B_grid_lowr(check_low_recovery))]);
-disp(['High recovery check: ' num2str(Solution.B_grid_highr(check_high_recovery))]);
+check_low_recovery = calibrated_model_solution.B_grid_lowr(max(calibrated_model_solution.B_policy_lowr(calibrated_model_solution.D_policy == 0)) + 1);
+check_high_recovery = calibrated_model_solution.B_grid_highr(max(calibrated_model_solution.B_policy_highr(calibrated_model_solution.D_policy == 0)) + 1);
+disp(['Low recovery check: ' num2str(check_low_recovery)]);
+disp(['High recovery check: ' num2str(check_high_recovery)]);
 
 %% Parameters for plots:
 

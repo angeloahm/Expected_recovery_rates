@@ -28,8 +28,8 @@ Solution.D_policy = permute(reshape(calibrated_model_solution.D_policy, params.b
 
 %% Perform checks to see if bounds bind or not:
 
-check_low_recovery = max(max(max(Solution.B_policy_lowr)));
-check_high_recovery = max(max(max(Solution.B_policy_highr)));
+check_low_recovery = calibrated_model_solution.B_grid_lowr(max(calibrated_model_solution.B_policy_lowr(calibrated_model_solution.D_policy == 0) + 1));
+check_high_recovery = calibrated_model_solution.B_grid_lowr(max(max(max(calibrated_model_solution.B_policy_highr(calibrated_model_solution.D_policy == 0 ))))+1);
 disp(['Low recovery check: ' num2str(Solution.B_grid_lowr(check_low_recovery))]);
 disp(['High recovery check: ' num2str(Solution.B_grid_highr(check_high_recovery))]);
 
@@ -332,7 +332,7 @@ plot3(X_selected, Y_selected, Z_selected, 'x');
 title('Total bond policy given $(b_h,b_l)$', 'Interpreter', 'latex', 'FontSize', fontSize);
 xlabel('$b_l$', 'Interpreter', 'latex', 'FontSize', fontSize);
 ylabel('$b_h$', 'Interpreter', 'latex', 'FontSize', fontSize);
-zlabel('$(b_h^{\prime}+b_l^{\prime}$', 'Interpreter', 'latex', 'FontSize', fontSize);
+zlabel('$(b_h^{\prime}+b_l^{\prime})$', 'Interpreter', 'latex', 'FontSize', fontSize);
 grid on;
 saveas(gcf, fullfile('Figures', 'policies_total_plot.png'));
 
