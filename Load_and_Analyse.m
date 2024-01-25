@@ -1,4 +1,7 @@
-%% This file generates the plots after solving the model.
+%% This file generates the plots after solving the model:
+% First we need to solve the model and store the results in the
+% calibrated_model_solution struct. Then we reshape and store everything in
+% Solution struct. Plots are then stored in the Figures folder.
 
 %% Format variables:
 
@@ -14,18 +17,6 @@ Solution.B_grid_lowr = calibrated_model_solution.B_grid_lowr;
 Solution.B_grid_highr = calibrated_model_solution.B_grid_highr;
 Solution.P = reshape(calibrated_model_solution.P, params.y_grid_size, params.y_grid_size)';
 
-% Bond policies:
-Bond_policy_highr = calibrated_model_solution.B_grid_highr(calibrated_model_solution.B_policy_highr + 1);
-Bond_policy = calibrated_model_solution.B_grid_highr(calibrated_model_solution.B_policy_highr + 1) + calibrated_model_solution.B_grid_lowr(calibrated_model_solution.B_policy_lowr + 1);
-Bond_policy_highr(calibrated_model_solution.D_policy == 1) = 0;
-Bond_policy(calibrated_model_solution.D_policy == 1) = 0;
-Bond_policy = permute(reshape(Bond_policy, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
-Bond_policy_highr = permute(reshape(Bond_policy_highr, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
-
-% Included NaNs:
-calibrated_model_solution.B_policy_lowr(calibrated_model_solution.D_policy == 1) = NaN;
-calibrated_model_solution.B_policy_highr(calibrated_model_solution.D_policy == 1) = NaN;
-
 % Reshape endogenous objects:
 Solution.Q_lowr = permute(reshape(calibrated_model_solution.Q_lowr, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
 Solution.Q_highr = permute(reshape(calibrated_model_solution.Q_highr, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
@@ -34,16 +25,13 @@ Solution.V_r = permute(reshape(calibrated_model_solution.V_r, params.b_grid_size
 Solution.V_d = permute(reshape(calibrated_model_solution.V_d, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
 Solution.D_policy = permute(reshape(calibrated_model_solution.D_policy, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
 
-% When reshaping policy for debt, not that MATLAB starts indexing at 1.
-Solution.B_policy_lowr = permute(reshape(calibrated_model_solution.B_policy_lowr, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]) + 1;
-Solution.B_policy_highr = permute(reshape(calibrated_model_solution.B_policy_highr, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]) + 1;
 
 %% Perform checks to see if bounds bind or not:
 
-check_low_recovery = max(max(max(Solution.B_policy_lowr)));
-check_high_recovery = max(max(max(Solution.B_policy_highr)));
-disp(['Low recovery check: ' num2str(Solution.B_grid_lowr(check_low_recovery))]);
-disp(['High recovery check: ' num2str(Solution.B_grid_highr(check_high_recovery))]);
+check_low_recovery = calibrated_model_solution.B_grid_lowr(max(calibrated_model_solution.B_policy_lowr(calibrated_model_solution.D_policy == 0)) + 1);
+check_high_recovery = calibrated_model_solution.B_grid_highr(max(calibrated_model_solution.B_policy_highr(calibrated_model_solution.D_policy == 0)) + 1);
+disp(['Low recovery check: ' num2str(check_low_recovery)]);
+disp(['High recovery check: ' num2str(check_high_recovery)]);
 
 %% Parameters for plots:
 
@@ -53,16 +41,14 @@ bh_lowlevel = round(params.b_grid_size_highr/8);
 bh_midlevel = round(params.b_grid_size_highr/4);
 bh_highlevel = round(params.b_grid_size_highr/2);
 
-bl_lowlevel = round(params.b_grid_size_lowr/8);
-bl_midlevel = round(params.b_grid_size_lowr/4);
-bl_highlevel = round(params.b_grid_size_lowr/2);
+bl_lowlevel = bh_lowlevel;
+bl_midlevel = bh_midlevel;
+bl_highlevel = bh_highlevel;
 
 
 %% Plot value functions:
 
-
 %%% Plot value functions for LOW_RECOVERY debt given high recovery debt:
-
 % Set font size
 fontSize = 14;
 % Set figure size
@@ -217,7 +203,21 @@ saveas(gcf, fullfile('Figures', 'prices_highrecovery_plot.png.png'));
 
 %% Plot policy functions:
 
-%%% Plot policies for LOW_RECOVERY debt given high recovery debt:
+
+% Bond policies:
+Solution.Bond_policy_highr = calibrated_model_solution.B_grid_highr(calibrated_model_solution.B_policy_highr + 1);
+Solution.Bond_policy_lowr = calibrated_model_solution.B_grid_lowr(calibrated_model_solution.B_policy_lowr + 1);
+Solution.Bond_policy = calibrated_model_solution.B_grid_highr(calibrated_model_solution.B_policy_highr + 1) + calibrated_model_solution.B_grid_lowr(calibrated_model_solution.B_policy_lowr + 1);
+
+Solution.Bond_policy_highr(calibrated_model_solution.D_policy == 1) = -1;
+Solution.Bond_policy_lowr(calibrated_model_solution.D_policy == 1) = -1;
+Solution.Bond_policy(calibrated_model_solution.D_policy == 1) = -1;
+
+Solution.Bond_policy = permute(reshape(Solution.Bond_policy, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
+Solution.Bond_policy_highr = permute(reshape(Solution.Bond_policy_highr, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
+Solution.Bond_policy_lowr = permute(reshape(Solution.Bond_policy_lowr, params.b_grid_size_lowr, params.b_grid_size_highr, params.y_grid_size), [2, 1, 3]);
+
+%% Plot policies for LOW_RECOVERY debt given high recovery debt:
 
 % Set font size
 fontSize = 14;
@@ -233,26 +233,19 @@ figure('Units', 'inches', 'Position', [0, 0, figureSize], 'Color', 'w');
 legend_entry_low = sprintf('b_h = %.2f', Solution.B_grid_highr(bh_lowlevel));
 legend_entry_mid = sprintf('b_h = %.2f', Solution.B_grid_highr(bh_midlevel));
 legend_entry_high = sprintf('b_h = %.2f', Solution.B_grid_highr(bh_highlevel));
-
-% Small high-recovery debt level:
-nonNaN_indices = ~isnan(Solution.B_policy_lowr(bh_lowlevel,:, y_index));
-policy = Solution.B_policy_lowr(bh_lowlevel,:, y_index);
-policy = policy(nonNaN_indices);
-plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '-');
-hold on;
-% Medium high-recovery debt level:
-nonNaN_indices = ~isnan(Solution.B_policy_lowr(bh_midlevel,:, y_index));
-policy = Solution.B_policy_lowr(bh_midlevel,:, y_index);
-policy = policy(nonNaN_indices);
-plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '--');
-hold on;
-% Big high-recovery debt level:
-nonNaN_indices = ~isnan(Solution.B_policy_lowr(bh_highlevel,:, y_index));
-policy = Solution.B_policy_lowr(bh_highlevel,:, y_index);
-policy = policy(nonNaN_indices);
-plot(Solution.B_grid_lowr(nonNaN_indices), Solution.B_grid_lowr(policy), 'LineWidth', lineWidth, 'LineStyle', '-.');
+% % Small high-recovery debt level:
+y_axis = Solution.Bond_policy_lowr(bh_lowlevel,:, y_index);
+plot(Solution.B_grid_lowr(y_axis>-1), y_axis(y_axis>-1), 'LineWidth', lineWidth, 'LineStyle', '-');
+ hold on;
+% % Medium high-recovery debt level:
+y_axis = Solution.Bond_policy_lowr(bh_midlevel,:, y_index);
+plot(Solution.B_grid_lowr(y_axis>-1), y_axis(y_axis>-1), 'LineWidth', lineWidth, 'LineStyle', '--');
+% hold on;
+% % Big high-recovery debt level:
+y_axis = Solution.Bond_policy_lowr(bh_highlevel,:, y_index);
+plot(Solution.B_grid_lowr(y_axis>-1), y_axis(y_axis>-1), 'LineWidth', lineWidth, 'LineStyle', '-.');
 hold off;
-% Add title and labels with LaTeX formatting
+% % Add title and labels with LaTeX formatting
 title('Low-recovery bond policy given $b_h$', 'Interpreter', 'latex', 'FontSize', fontSize);
 xlabel('$b_l$', 'Interpreter', 'latex', 'FontSize', fontSize);
 ylabel('$b_{l}^{\prime}(\cdot, b_h, y)$', 'Interpreter', 'latex', 'FontSize', fontSize);
@@ -262,10 +255,15 @@ legend(legend_entry_low, legend_entry_mid, legend_entry_high, 'FontSize', legend
 grid on;
 % Increase font size of ticks
 set(gca, 'FontSize', fontSize);
+% Set symmetric ticks up to 0.5 for both x and y axes
+ticks = 0:0.05:0.5;
+xticks(ticks);
+yticks(ticks);
+% Set the same limits for both x and y axes
+xlim([0, 0.5]);
+ylim([0, 0.5]);
 % Create folder if it doesn't exist
 saveas(gcf, fullfile('Figures', 'policies_lowrecovery_plot.png'));
-
-%% Plot policy functions:
 
 %%% Plot policies for HIGH_RECOVERY debt given high recovery debt:
 
@@ -280,30 +278,23 @@ legendFontSize = 12;
 % Create figure
 figure('Units', 'inches', 'Position', [0, 0, figureSize], 'Color', 'w');
 % Create legend entry with LaTeX formatting
-legend_entry_low = sprintf('b_l = %.2f', Solution.B_grid_lowr(bl_lowlevel));
-legend_entry_mid = sprintf('b_l = %.2f', Solution.B_grid_lowr(bl_midlevel));
-legend_entry_high = sprintf('b_l = %.2f', Solution.B_grid_lowr(bl_highlevel));
-
-% Small high-recovery debt level:
-nonNaN_indices = ~isnan(Solution.B_policy_highr(:,bl_lowlevel, y_index));
-policy = Solution.B_policy_highr(:,bl_lowlevel, y_index);
-policy = policy(nonNaN_indices);
-plot(Solution.B_grid_highr(nonNaN_indices), Solution.B_grid_highr(policy), 'LineWidth', lineWidth, 'LineStyle', '-');
+legend_entry_low = sprintf('b_h = %.2f', Solution.B_grid_lowr(bl_lowlevel));
+legend_entry_mid = sprintf('b_h = %.2f', Solution.B_grid_lowr(bl_midlevel));
+legend_entry_high = sprintf('b_h = %.2f', Solution.B_grid_lowr(bl_highlevel));
+% % Small high-recovery debt level:
+y_axis = Solution.Bond_policy_highr(:,bl_lowlevel, y_index);
+plot(Solution.B_grid_highr(y_axis>-1), y_axis(y_axis>-1), 'LineWidth', lineWidth, 'LineStyle', '-');
 hold on;
-% Medium high-recovery debt level:
-nonNaN_indices = ~isnan(Solution.B_policy_highr(:,bl_midlevel, y_index));
-policy = Solution.B_policy_highr(:,bl_midlevel, y_index);
-policy = policy(nonNaN_indices);
-plot(Solution.B_grid_highr(nonNaN_indices), Solution.B_grid_highr(policy), 'LineWidth', lineWidth, 'LineStyle', '--');
-hold on;
-% Big high-recovery debt level:
-nonNaN_indices = ~isnan(Solution.B_policy_highr(:,bl_highlevel, y_index));
-policy = Solution.B_policy_highr(:,bl_highlevel, y_index);
-policy = policy(nonNaN_indices);
-plot(Solution.B_grid_highr(nonNaN_indices), Solution.B_grid_highr(policy), 'LineWidth', lineWidth, 'LineStyle', '-.');
+% % Medium high-recovery debt level:
+y_axis = Solution.Bond_policy_highr(:,bl_midlevel, y_index);
+plot(Solution.B_grid_highr(y_axis>-1), y_axis(y_axis>-1), 'LineWidth', lineWidth, 'LineStyle', '--');
+% hold on;
+% % Big high-recovery debt level:
+y_axis = Solution.Bond_policy_highr(:,bl_highlevel, y_index);
+plot(Solution.B_grid_highr(y_axis>-1), y_axis(y_axis>-1), 'LineWidth', lineWidth, 'LineStyle', '-.');
 hold off;
-% Add title and labels with LaTeX formatting
-title('High-recovery bond policy given $b_h$', 'Interpreter', 'latex', 'FontSize', fontSize);
+% % Add title and labels with LaTeX formatting
+title('High-recovery bond policy given $b_l$', 'Interpreter', 'latex', 'FontSize', fontSize);
 xlabel('$b_h$', 'Interpreter', 'latex', 'FontSize', fontSize);
 ylabel('$b_{h}^{\prime}(b_l, \cdot, y)$', 'Interpreter', 'latex', 'FontSize', fontSize);
 % Display the legend with increased font size
@@ -312,6 +303,13 @@ legend(legend_entry_low, legend_entry_mid, legend_entry_high, 'FontSize', legend
 grid on;
 % Increase font size of ticks
 set(gca, 'FontSize', fontSize);
+% Set symmetric ticks up to 0.5 for both x and y axes
+ticks = 0:0.05:0.5;
+xticks(ticks);
+yticks(ticks);
+% Set the same limits for both x and y axes
+xlim([0, 0.5]);
+ylim([0, 0.5]);
 % Create folder if it doesn't exist
 saveas(gcf, fullfile('Figures', 'policies_highrecovery_plot.png'));
 
@@ -319,12 +317,12 @@ saveas(gcf, fullfile('Figures', 'policies_highrecovery_plot.png'));
 
 
 figure('Units', 'inches', 'Position', [0, 0, figureSize], 'Color', 'w');
-Z = Bond_policy(:,:,y_index);
+Z = Solution.Bond_policy(:,:,y_index);
 x = Solution.B_grid_lowr;
 y = Solution.B_grid_highr;
 [X, Y] = meshgrid(x, y);
 
-mask = Z > 0;
+mask = Z > -1;
 X_selected = X(mask);
 Y_selected = Y(mask);
 Z_selected = Z(mask);
@@ -334,7 +332,7 @@ plot3(X_selected, Y_selected, Z_selected, 'x');
 title('Total bond policy given $(b_h,b_l)$', 'Interpreter', 'latex', 'FontSize', fontSize);
 xlabel('$b_l$', 'Interpreter', 'latex', 'FontSize', fontSize);
 ylabel('$b_h$', 'Interpreter', 'latex', 'FontSize', fontSize);
-zlabel('$b_h^{\prime}+b_l^{\prime}$', 'Interpreter', 'latex', 'FontSize', fontSize);
+zlabel('$(b_h^{\prime}+b_l^{\prime})$', 'Interpreter', 'latex', 'FontSize', fontSize);
 grid on;
 saveas(gcf, fullfile('Figures', 'policies_total_plot.png'));
 
