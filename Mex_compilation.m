@@ -20,7 +20,7 @@ params.b_grid_min_highr = 0.0;          % Minimum value for the high recovery bo
 params.b_grid_max_lowr = 0.75;           % Maximum value of the low recovery bond grid.
 params.b_grid_max_highr = 1;            % Maximum value of the high recovery bond grid.
 params.b_grid_size_lowr = (params.b_grid_max_lowr/params.b_grid_max_highr) * (params.b_grid_size_highr-1)+1;
-params.y_grid_size = 51;                 % Number of points in the grid for the income. (Always use Odd)
+params.y_grid_size = 11;                 % Number of points in the grid for the income. (Always use Odd)
 params.y_default = 0.969;               % Maximum income under default.
 params.beta = 0.953;                    % Discount factor.
 params.gamma = 2;                       % Risk aversion.
@@ -38,6 +38,4 @@ params.alpha_highr = 0.15;              % High recovery on defaulted debt.
 
 tic;
 calibrated_model_solution = main(params);
-save('Solution', 'calibrated_model_solution')
-save('Parameters', 'params')
 toc;
