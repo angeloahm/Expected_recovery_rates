@@ -58,15 +58,13 @@ function [stats, simulations] = Run_Simulations(p, p_sim, Eq, Rand_Vec)
     simulations.Y = Eq.Y_grid(yt(TBurn:end));
     simulations.Y_index = yt(TBurn:end);
 
-    simulations.B_highr_share = NaN(size(simulations.B_high));
-    nonZeroTotalIndices = simulations.B_total ~= 0;
-    simulations.B_highr_share(nonZeroTotalIndices) = simulations.B_high(nonZeroTotalIndices) ./ simulations.B_total(nonZeroTotalIndices);
-    simulations.B_highr_share(simulations.Default_policy == 1) = NaN;
-
-    stats.B_highr_share_mean = nanmean(simulations.B_highr_share);
-    stats.B_highr_share_sd = nanstd(simulations.B_highr_share);
+    simulations.B_highr_share = zeros(size(simulations.B_high));
+    nonZeroHighIndices = simulations.B_total ~= 0;
+    simulations.B_highr_share(nonZeroHighIndices) = simulations.B_high(nonZeroHighIndices) ./ simulations.B_total(nonZeroHighIndices);
 
     stats.Y = mean(simulations.Y(simulations.Default_policy == 0));
+    stats.B_highr_share_mean = mean(simulations.B_highr_share(simulations.Default_policy == 0));
+    stats.B_highr_share_sd = std(simulations.B_highr_share(simulations.Default_policy == 0));
     stats.B_lowr = mean(simulations.B_low(simulations.Default_policy == 0));
     stats.B_lowr_std = std(simulations.B_low(simulations.Default_policy == 0));
     stats.B_highr = mean(simulations.B_high(simulations.Default_policy == 0));
